@@ -1,11 +1,15 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen, urljoin
 import urllib
+import os.path
 
 def download_video(video_rel_url, name):
-	download = urllib.request.FancyURLopener()
-	download.retrieve(video_rel_url, name+".mp4")
-	print(""+name+" downloaded")
+	if os.path.isfile(name+".mp4"):
+		print(""+name+".mp4 : File already exists")
+	else:
+		download = urllib.request.FancyURLopener()
+		download.retrieve(video_rel_url, name+".mp4")
+		print(""+name+" downloaded")
 
 def download_page(url, name):
 	page = urlopen(url)
