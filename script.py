@@ -2,14 +2,33 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen, urljoin
 import urllib
 import os.path
+import requests
+from os import system, name
+
+def clear():
+	if name == 'nt':
+		_ = system('cls')
+	else:
+		_ = system("clear")
 
 def download_video(video_rel_url, name):
-	if os.path.isfile(name+".mp4"):
-		print(""+name+".mp4 : File already exists")
+	filename = name + ".mp4"
+	r = requests.get(video_rel_url, stream=True, timeout=10)
+	file_size = int(r.headers['content-length'])
+	if os.path.isfile(filename):
+		file_size_local = os.stat(filename).st_size
+		if file_size_local == file_size:
+			print(""+filename+" => File already exists")
+		else:
+			print("Resuming download")
+			file = open(filename)
+			with open(filename, 'wb', int(file.seek(file_size_local))) as file:
+				for chunk in r.iter_content(chunk_size=1024*1024):
+						file.write(chunk)
 	else:
-		download = urllib.request.FancyURLopener()
-		download.retrieve(video_rel_url, name+".mp4")
-		print(""+name+" downloaded")
+		with open(filename, 'wb') as file:
+			for chunk in r.iter_content(chunk_size=1024*1024):
+				file.write(chunk)
 
 def download_page(url, name):
 	page = urlopen(url)
@@ -35,6 +54,7 @@ def verify(pr_link):
 		print("The following url is not a MIT-OCW link")
 
 def main():
+	clear()
 	link = input("Enter Download URL: ")
 	verify(link)
 
