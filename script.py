@@ -13,16 +13,13 @@ def clear():
 	else:
 		_ = system("clear")
 
-def progress(localsize, filesize, t):
-	# speed = (localsize/t)
+def progress(localsize, filesize):
 	percent = (localsize/filesize) * 100
-	percent = round(percent, 2)
-	# ""+str(speed)+" kb/s "
-	output = "\r %f downloaded" % percent
+	percent = int(round(percent, 2))
+	output = "\r %i%% downloaded" % percent
 	sys.stdout.write(output)
 	sys.stdout.flush()
 
-global starttime
 
 def download_video(video_rel_url, name):
 	filename = name + ".mp4"
@@ -33,24 +30,20 @@ def download_video(video_rel_url, name):
 		if file_size_local == file_size:
 			print(""+filename+" => File already exists")
 		else:
-			starttime = time.time()
-			time_passed = time.time() - starttime
 			print("Downloading")
-			file_size_local = os.stat(filename).st_size
-			file = open(filename, 'ab')
-			for chunk in r.iter_content(chunk_size=1024*1024):
+			with open(filename, 'wb') as file:
+				for chunk in r.iter_content(chunk_size=1024*1024):
 					file.write(chunk)
-					progress(file_size_local, file_size, time_passed)
-			print(filename+" downloaded")
+					file_size_local = os.stat(filename).st_size
+					progress(file_size_local, file_size)
+			print("\n"+filename+" downloaded")
 	else:
-		starttime = time.time()
-		time_passed = time.time() - starttime
-		file_size_local = os.stat(filename).st_size
 		with open(filename, 'wb') as file:
 			for chunk in r.iter_content(chunk_size=1024*1024):
 				file.write(chunk)
-				progress(file_size_local, file_size, time_passed)
-		print(filename+" downloaded")
+				file_size_local = os.stat(filename).st_size
+				progress(file_size_local, file_size)
+		print("\n"+filename+" downloaded")
 
 def download_page(url, name):
 	page = urlopen(url)
