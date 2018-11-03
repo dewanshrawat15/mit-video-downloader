@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen, urljoin
 import urllib
 import os.path
-import time
+# import time detect change in filesize to calculate internet speed
 import requests
 import sys
 from os import system, name
@@ -14,9 +14,13 @@ def clear():
 		_ = system("clear")
 
 def progress(localsize, filesize):
-	percent = (localsize/filesize) * 100
-	percent = int(round(percent, 2))
-	output = "\r %i%% downloaded" % percent
+	if localsize == 0:
+		percent = 0
+	else:
+		percent = (localsize/filesize) * 100
+		percent = int((round(percent, 2))/2)
+	message = "#" * percent
+	output = "\b\r %s" % message
 	sys.stdout.write(output)
 	sys.stdout.flush()
 
@@ -30,7 +34,7 @@ def download_video(video_rel_url, name):
 		if file_size_local == file_size:
 			print(""+filename+" => File already exists")
 		else:
-			print("Downloading")
+			print("Reinitiating Download")
 			with open(filename, 'wb') as file:
 				for chunk in r.iter_content(chunk_size=1024*1024):
 					file.write(chunk)
@@ -38,6 +42,7 @@ def download_video(video_rel_url, name):
 					progress(file_size_local, file_size)
 			print("\n"+filename+" downloaded")
 	else:
+		print("Downloading")
 		with open(filename, 'wb') as file:
 			for chunk in r.iter_content(chunk_size=1024*1024):
 				file.write(chunk)
