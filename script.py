@@ -18,9 +18,8 @@ def progress(localsize, filesize):
 		percent = 0
 	else:
 		percent = (localsize/filesize) * 100
-		percent = int((round(percent, 2))/2)
-	message = "#" * percent
-	output = "\b\r %s" % message
+		percent = int((round(percent, 2)))
+	output = "\r %s%% downloaded" % percent
 	sys.stdout.write(output)
 	sys.stdout.flush()
 
