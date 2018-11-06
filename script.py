@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen, urljoin
 import urllib
 import os.path
-# import time detect change in filesize to calculate internet speed
 import requests
 import sys
 from os import system, name
